@@ -29,11 +29,10 @@ package ComputationalGeometry;
 
 import processing.core.*;
 
-public class IsoSurface implements PConstants {
+public class IsoSurface extends AbstractComputationalGeometry implements PConstants {
   
 	PVector start, end;
 	int detailx, detaily, detailz;
-	PApplet theParent;
 	public PVector[] vertices;
 	public float[] values;
 	float xSize, ySize, zSize;
@@ -42,15 +41,27 @@ public class IsoSurface implements PConstants {
 	float[] cubeValues;
 	
 	public IsoSurface(PApplet _theParent, PVector _start, PVector _end, int _detail ){
-		theParent = _theParent;
-		start = _start;
-		end = _end;
-		detailx = detaily = detailz = _detail;
-		this.reset();
+		this(_theParent, _start, _end, _detail, _detail, _detail);
 	}
   
   	public IsoSurface(PApplet _theParent, PVector _start, PVector _end, int _detailx, int _detaily, int _detailz ){
-  		theParent = _theParent;
+  		super(_theParent);
+  		
+  		start = _start;
+	    end = _end;
+	    detailx = _detailx;
+	    detaily = _detaily;
+	    detailz = _detailz;
+	    this.reset();
+  	}
+  	
+  	public IsoSurface(CGRenderContext renderContext, PVector _start, PVector _end, int _detail) {
+  		this(renderContext, _start, _end, _detail, _detail, _detail);
+  	}
+  	
+  	public IsoSurface(CGRenderContext renderContext, PVector _start, PVector _end, int _detailx, int _detaily, int _detailz ){
+  		super(renderContext);
+  		
 	    start = _start;
 	    end = _end;
 	    detailx = _detailx;
@@ -61,7 +72,7 @@ public class IsoSurface implements PConstants {
 	
   	public void reset(){
     
-	    font = theParent.createFont("Arial", 10.0f);
+	    font = this.renderContext.createFont("Arial", 10.0f);
 	    
 	    cubeVertexes = new PVector[8];
 		cubeValues = new float[8];
@@ -123,10 +134,10 @@ public void setValues( float[] a){
 			int other = i + detailz*detaily + detailz + 1;
 			PVector center = PVector.add( vertices[i], vertices[other]);
 		    center.mult(.5f);
-		    theParent.pushMatrix();
-		    theParent.translate(center.x, center.y, center.z);
-		    theParent.box( vertices[other].x - vertices[i].x,  vertices[other].y - vertices[i].y, vertices[other].z - vertices[i].z);
-		    theParent.popMatrix();
+		    this.renderContext.pushMatrix();
+		    this.renderContext.translate(center.x, center.y, center.z);
+		    this.renderContext.box( vertices[other].x - vertices[i].x,  vertices[other].y - vertices[i].y, vertices[other].z - vertices[i].z);
+		    this.renderContext.popMatrix();
 		 }
 	  }
   }
@@ -162,12 +173,12 @@ public void setValues( float[] a){
 			      }
 			    }
 			    int lookUp = PApplet.unbinary(myString);
-			    float sx = theParent.screenX(corner.x + xSize/2.0f, corner.y+ ySize/2.0f, corner.z + zSize/2.0f );
-			    float sy = theParent.screenY(corner.x + xSize/2.0f, corner.y+ ySize/2.0f, corner.z + zSize/2.0f );
-			    theParent.textMode(SCREEN);
-			    theParent.textAlign(CENTER, CENTER);
-			    theParent.textFont(font);
-			    theParent.text(lookUp, sx, sy);
+			    float sx = this.renderContext.screenX(corner.x + xSize/2.0f, corner.y+ ySize/2.0f, corner.z + zSize/2.0f );
+			    float sy = this.renderContext.screenY(corner.x + xSize/2.0f, corner.y+ ySize/2.0f, corner.z + zSize/2.0f );
+			    this.renderContext.textMode(SCREEN);
+			    this.renderContext.textAlign(CENTER, CENTER);
+			    this.renderContext.textFont(font);
+			    this.renderContext.text(lookUp, sx, sy);
 	    	}
 	    }
 	  
@@ -225,7 +236,7 @@ public void setValues( float[] a){
 
 	    for(int i=0;i<5;i++){
 	      if(triangles[i*3] != -1){
-	        theParent.beginShape(TRIANGLES);
+	      	this.renderContext.beginShape(TRIANGLES);
 	        for(int v=0;v<3;v++){
 	          int num1 = edgeToVertexA[triangles[i*3+v]];
 	          int num2 = edgeToVertexB[triangles[i*3+v]];
@@ -240,9 +251,9 @@ public void setValues( float[] a){
 	            vtx2P = 1- PApplet.abs((threshold-myValues[num2])/spread);
 	          }
 	          //vtx1P = vtx2P = .5f;
-	          theParent.vertex(vertexes[num1].x*vtx1P+vertexes[num2].x*vtx2P,vertexes[num1].y*vtx1P+vertexes[num2].y*vtx2P,vertexes[num1].z*vtx1P+vertexes[num2].z*vtx2P);
+	          this.renderContext.vertex(vertexes[num1].x*vtx1P+vertexes[num2].x*vtx2P,vertexes[num1].y*vtx1P+vertexes[num2].y*vtx2P,vertexes[num1].z*vtx1P+vertexes[num2].z*vtx2P);
 	        }
-	        theParent.endShape();
+	        this.renderContext.endShape();
 	      }
 	    }
 	  }

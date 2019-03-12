@@ -30,16 +30,24 @@ package ComputationalGeometry;
 import processing.core.*;
 import quickhull3d.*;
 
-public class IsoWrap implements PConstants{
+public class IsoWrap extends AbstractComputationalGeometry implements PConstants{
 	
-	PApplet theParent;
+	//PApplet theParent;
   
    Point3d[] ptset;
    QuickHull3D hull;
 
   public IsoWrap(PApplet _theParent) {
-  theParent = _theParent;
+  	super(_theParent);
+  	
     ptset = new Point3d[0];
+    hull = new QuickHull3D();
+  }
+  
+  public IsoWrap(CGRenderContext renderContext) {
+  	super(renderContext);
+  	
+  	ptset = new Point3d[0];
     hull = new QuickHull3D();
   }
 
@@ -63,12 +71,12 @@ public class IsoWrap implements PConstants{
     Point3d[] vertices = hull.getVertices();
     int[][] faceIndices = hull.getFaces();
     for (int i = 0; i < faceIndices.length; i++) {
-      theParent.beginShape();
+      this.renderContext.beginShape();
       for (int k = 0; k < faceIndices[i].length; k++) {
         Point3d v = vertices[faceIndices[i][k]];
-        theParent.vertex((float)v.x, (float)v.y, (float)v.z);
+        this.renderContext.vertex((float)v.x, (float)v.y, (float)v.z);
       }
-      theParent.endShape(CLOSE);
+      this.renderContext.endShape(CLOSE);
     }
   }
 }

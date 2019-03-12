@@ -29,14 +29,13 @@ package ComputationalGeometry;
 
 import processing.core.*;
 
-public class IsoContour implements PConstants{
+public class IsoContour extends AbstractComputationalGeometry implements PConstants{
  
   PVector start, end;
   int cols, rows;
   PVector[] vertexes;
   float[] vertexValues;
-  int falloff;  
-  PApplet theParent;
+  int falloff;
 
   int edgeToVertexA[] = {
     0, 1, 2, 3, 0, 1, 2, 3
@@ -65,10 +64,22 @@ public class IsoContour implements PConstants{
   };
   
   public IsoContour(PApplet _theParent, PVector _start, PVector _end, int _cols, int _rows){
+  	super(_theParent);
+  	
     start = _start;
     end = _end;
     falloff = 1;
-    theParent = _theParent;
+    cols = _cols; 
+    rows = _rows;
+    this.construct();
+  }
+  
+  public IsoContour(CGRenderContext _context, PVector _start, PVector _end, int _cols, int _rows) {
+  	super(_context);
+  	
+  	start = _start;
+    end = _end;
+    falloff = 1;
     cols = _cols; 
     rows = _rows;
     this.construct();
@@ -111,10 +122,10 @@ public class IsoContour implements PConstants{
 	  float colDistance = (end.x - start.x)/cols;
 	    float rowDistance = (end.y - start.y)/rows;
 	    for(int i=0; i<=cols; i++){
-	    	theParent.line(start.x + colDistance*i, start.y, 0, start.x + colDistance*i, end.y, 0);
+	    	this.renderContext.line(start.x + colDistance*i, start.y, 0, start.x + colDistance*i, end.y, 0);
 	    }
 	    for(int i=0; i<=rows; i++){
-	    	theParent.line(start.x, start.y + rowDistance*i, 0, end.x, start.y + rowDistance*i, 0);
+	    	this.renderContext.line(start.x, start.y + rowDistance*i, 0, end.x, start.y + rowDistance*i, 0);
 	    }   
   }
   
@@ -154,7 +165,7 @@ public class IsoContour implements PConstants{
     //for each of possible 4 triangles, draw it
     for(int k=0;k<4;k++){
       if(triangles[k*3] != -1){
-    	theParent.beginShape(TRIANGLES);
+      	this.renderContext.beginShape(TRIANGLES);
         //for each vertex of the triangle
         for(int v=0;v<3;v++){
           // get related vertexes, to do average
@@ -179,9 +190,9 @@ public class IsoContour implements PConstants{
           }
           float x = (vertexes[ref[num1]].x * vtx1P + vertexes[ref[num2]].x * vtx2P);
           float y = (vertexes[ref[num1]].y * vtx1P + vertexes[ref[num2]].y * vtx2P);
-          theParent.vertex(x,y,0.0f);
+          this.renderContext.vertex(x,y,0.0f);
         }
-        theParent.endShape();
+        this.renderContext.endShape();
       }
     }
   }

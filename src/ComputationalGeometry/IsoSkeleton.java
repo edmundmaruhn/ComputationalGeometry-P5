@@ -31,9 +31,8 @@ import java.util.ArrayList;
 import processing.core.*;
 import quickhull3d.*;
 
-public class IsoSkeleton implements PConstants{
+public class IsoSkeleton extends AbstractComputationalGeometry implements PConstants{
 	
-  PApplet theParent;
   private ArrayList[] adj;
   private float[] VW;
   private float defaultWeight = 1.f;
@@ -41,9 +40,18 @@ public class IsoSkeleton implements PConstants{
   private PVector[] nodes;  
   private boolean[] marked;
 
+  public IsoSkeleton(CGRenderContext renderContext) {
+  	super(renderContext);
+  	this.construct();
+  }
+  
   public IsoSkeleton (PApplet _theParent) {
-  theParent = _theParent;
-    adj = new ArrayList[0];
+  	super(_theParent);
+  	this.construct();
+  }
+  
+  private void construct() {
+  	adj = new ArrayList[0];
     VW  = new float[0];
     nodes  = new PVector[0];
     marked = new boolean[0];
@@ -183,9 +191,9 @@ public class IsoSkeleton implements PConstants{
 
       // Cap ends
       PVector[] cap = p2.quadPts(VW[v], VW[v]);
-      theParent.beginShape();
-      for (int j = 0; j < cap.length; j++)  theParent.vertex(cap[j].x, cap[j].y, cap[j].z);
-      theParent.endShape(CLOSE);
+      this.renderContext.beginShape();
+      for (int j = 0; j < cap.length; j++)  this.renderContext.vertex(cap[j].x, cap[j].y, cap[j].z);
+      this.renderContext.endShape(CLOSE);
     }
   }
 
@@ -339,13 +347,13 @@ public class IsoSkeleton implements PConstants{
     for (int i = 0; i < faceIndices.length; i++)
     {
       //colorPairs(i);
-      theParent.beginShape();
+    	this.renderContext.beginShape();
       for (int k = 0; k < faceIndices[i].length; k++)
       {
         Point3d v = vertices[faceIndices[i][k]];
-        theParent.vertex((float)v.x, (float)v.y, (float)v.z);
+        this.renderContext.vertex((float)v.x, (float)v.y, (float)v.z);
       }
-      theParent.endShape(CLOSE);
+      this.renderContext.endShape(CLOSE);
     }
   }
 
@@ -370,12 +378,12 @@ public class IsoSkeleton implements PConstants{
 
   //----------------------------------------------------------------------------------------
   private void quad3D(PVector p1, PVector p2, PVector p3, PVector p4) {
-    theParent.beginShape();
-    theParent.vertex(p1.x, p1.y, p1.z); 
-    theParent.vertex(p2.x, p2.y, p2.z);
-   theParent.vertex(p3.x, p3.y, p3.z); 
-   theParent.vertex(p4.x, p4.y, p4.z);
-    theParent.endShape(CLOSE);
+  	this.renderContext.beginShape();
+  	this.renderContext.vertex(p1.x, p1.y, p1.z); 
+  	this.renderContext.vertex(p2.x, p2.y, p2.z);
+  	this.renderContext.vertex(p3.x, p3.y, p3.z); 
+  	this.renderContext.vertex(p4.x, p4.y, p4.z);
+  	this.renderContext.endShape(CLOSE);
   }
 
 
